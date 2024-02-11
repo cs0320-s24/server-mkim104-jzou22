@@ -27,39 +27,44 @@ public class BroadbandDataHandler implements RequestHandler {
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    String stateCode = request.queryParams("state");
-    String countyCode = request.queryParams("county");
-    if (stateCode == null || countyCode == null) {
+    String stateName = request.queryParams("state");
+    String countyName = request.queryParams("county");
+    if (stateName == null || countyName == null) {
       response.status(400); // BAD REQUEST
       return "State and county parameters are required.";
     }
 
     try {
-      List<List<String>> data = censusApiAdapter.fetchBroadbandData(stateCode, countyCode);
-      if (data == null || data.size() < 2) { // No data found
+      String stateCode = censusApiAdapter.getStateCode(stateName);
+      if (stateCode == null) {
+        response.status(400);
+        return "Invalid state name provided.";
+      }
+
+      String countyCode = censusApiAdapter.getCountyCode(stateName, countyName);
+      if (countyCode == null) {
+        response.status(400);
+        return "Invalid county name provided for the given state.";
+      }
+
+      List<List<String>> broadbandData = censusApiAdapter.fetchBroadbandData(stateCode, countyCode);
+      if (broadbandData == null || broadbandData.isEmpty() || broadbandData.size() < 2) {
         response.status(204); // NO CONTENT
         return "";
       }
+      String broadbandAccessPercentage = broadbandData.get(1).get(1);
 
-      String fullName = data.get(1).get(0); // "County, State"
-      String broadbandAccessPercentage = data.get(1).get(1);
-
-      // Splitting fullName to extract county and state names separately
-      String[] nameParts = fullName.split(", ");
-      String countyName = nameParts[0];
-      String stateName = nameParts.length > 1 ? nameParts[1] : "";
-
-      Map<String, Object> enrichedResponse = new HashMap<>();
-      enrichedResponse.put("stateName", stateName); // Use stateName
-      enrichedResponse.put("countyName", countyName); // Use countyName
-      enrichedResponse.put("broadbandAccessPercentage", broadbandAccessPercentage);
+      Map<String, Object> responseData = new HashMap<>();
+      responseData.put("state", stateName);
+      responseData.put("county", countyName);
+      responseData.put("broadbandAccessPercentage", broadbandAccessPercentage);
 
       LocalDateTime now = LocalDateTime.now();
       DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-      enrichedResponse.put("retrievalDateTime", dtf.format(now));
+      responseData.put("retrievalDateTime", dtf.format(now));
 
       response.type("application/json");
-      return jsonAdapter.toJson(enrichedResponse);
+      return jsonAdapter.toJson(responseData);
     } catch (Exception e) {
       e.printStackTrace();
       response.status(500);
