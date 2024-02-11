@@ -41,6 +41,10 @@ public class CensusDataResult {
     return retrievalDateTime;
   }
 
+  public void setRetrievalDateTime(String retrievalDateTime) {
+    this.retrievalDateTime = retrievalDateTime;
+  }
+
   public void setBroadbandAccessPercentage(double broadbandAccessPercentage) {
     this.broadbandAccessPercentage = broadbandAccessPercentage;
   }
