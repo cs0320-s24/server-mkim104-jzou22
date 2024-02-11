@@ -1,0 +1,12 @@
+package edu.brown.cs.student.main.csv.handler;
+
+import edu.brown.cs.student.main.server.RequestHandler;
+import spark.Request;
+import spark.Response;
+
+public class ViewCSVHandler implements RequestHandler {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+        return null;
+    }
+}
