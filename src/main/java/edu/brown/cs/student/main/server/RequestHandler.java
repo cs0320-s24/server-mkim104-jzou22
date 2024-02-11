@@ -5,5 +5,5 @@ import spark.Response;
 
 @FunctionalInterface
 public interface RequestHandler {
-    Object handle(Request request, Response response) throws Exception;
+  Object handle(Request request, Response response) throws Exception;
 }
