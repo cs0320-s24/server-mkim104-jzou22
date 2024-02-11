@@ -13,18 +13,19 @@ import java.util.List;
 
 public class CensusApiAdapter {
   private final Moshi moshi;
-  private final JsonAdapter<List<CensusDataResult>> jsonAdapter;
+  private final JsonAdapter<List<List<String>>> jsonAdapter;
 
   public CensusApiAdapter() {
     this.moshi = new Moshi.Builder().build();
-    Type listOfCensusDataResultsType =
-        Types.newParameterizedType(List.class, CensusDataResult.class);
-    this.jsonAdapter = moshi.adapter(listOfCensusDataResultsType);
+    Type listOfListsOfStringType = Types.newParameterizedType(List.class, List.class, String.class);
+    this.jsonAdapter = moshi.adapter(listOfListsOfStringType);
   }
 
-  public String fetchBroadbandData(String state, String county) throws IOException {
+  public List<List<String>> fetchBroadbandData(String state, String county) throws IOException {
     String urlString = constructApiUrl(state, county);
-    return makeApiRequest(urlString); // Just return the raw JSON string
+    String jsonResponse = makeApiRequest(urlString); // Fetch raw JSON string
+    List<List<String>> data = jsonAdapter.fromJson(jsonResponse);
+    return data; // Return the parsed data
   }
 
   private String constructApiUrl(String state, String countyCodeWildcard) {
