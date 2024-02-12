@@ -34,16 +34,10 @@ public class ACSDataCache {
 
   public Object getIfPresent(String key) {
     Object value = cache.getIfPresent(key);
-    if (value != null) {
-      System.out.println("Cache hit: Key = " + key);
-    } else {
-      System.out.println("Cache miss: Key = " + key);
-    }
     return value;
   }
 
   public void put(String key, Object value) {
-    System.out.println("Putting into cache: Key = " + key + ", Value = " + value);
     cache.put(key, value);
   }
 }

@@ -57,7 +57,7 @@ public class CensusApiAdapter {
     if (cachedCode != null) {
       return cachedCode;
     }
-    // If not in cache, return directly from the local map or handle the miss
+    // If not in cache, return directly from the local map/handle the miss
     return stateCodes.get(stateName);
   }
 
