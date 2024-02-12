@@ -23,7 +23,7 @@ public class Main {
     // Create an instances of CSVHandlers
     LoadCSVHandler loadCSVHandler = new LoadCSVHandler();
     ViewCSVHandler viewCSVHandler = new ViewCSVHandler(loadCSVHandler);
-    SearchCSVHandler searchCSVHandler = new SearchCSVHandler(loadCSVHandler.getLoaded());
+    SearchCSVHandler searchCSVHandler = new SearchCSVHandler(loadCSVHandler);
 
     // Registering the broadband endpoint with the new handler
     server.registerHandler("/broadband", broadbandDataHandler);

@@ -5,163 +5,110 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
 
 /**
- * Class: This is the parser to parse the input (CSV) and create the necessary objects using rows.
- * This class should be able to handle any type T objects.
+ * This is the user class which is responsible for the parsing of a CSV.
+ * It uses a buffered reader to read each line, and then you use a regex.
  *
- * @param <T>: To handle any object data type.
- */
-
-/**
- * Constructor for CSVParser.
- *
- * @param reader Reads the CSV.
- * @param row_creator Creates and converts rows.
+ * @param <T>
  */
 public class CSVParser<T> {
-  private final CreatorFromRow<T> row_creator;
-  private final boolean hasHeader;
-  private final BufferedReader reader;
-  private Consumer<Exception> errorHandler;
-  private char delimiter = ',';
-  private char quoteChar = '"';
+  List<T> parseArray = new ArrayList<>();
+  int initialColumnSize = -1;
+  static final Pattern csvRegex =
+          Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
 
-  public CSVParser(
-      Reader reader,
-      CreatorFromRow<T> rowcreator,
-      char delimiter,
-      char quoteChar,
-      boolean hasHeader) {
-    this.reader = new BufferedReader(reader);
-    this.row_creator = rowcreator;
-    this.delimiter = delimiter;
-    this.hasHeader = hasHeader;
-    this.quoteChar = quoteChar;
-    this.errorHandler =
-        null; // I know we do not like null but I want the developer to set the error they want.
+  /**
+   * Parse constructor which takes in the reader object and the creator type
+   * and then parses.
+   * @param read
+   * @param creator
+   * @throws IOException
+   * @throws FactoryFailureException
+   */
+  public CSVParser(Reader read, CreatorFromRow<T> creator)
+          throws IOException, FactoryFailureException {
+    this.parse(read, creator);
   }
 
   /**
-   * Story 2: Allows the user to set a custom error handler for error handling.
+   * Parses the content of a CSV file read from the provided Reader object,
+   * using the specified CreatorFromRow for creating objects from each row.
    *
-   * @param errorHandler A Consumer that takes an Exception as input.
+   * @param read    The Reader object containing the CSV file content.
+   * @param creator The CreatorFromRow implementation to create objects from CSV rows.
+   * @return        A List of objects created from the CSV rows.
+   * @throws IOException              If an I/O error occurs while reading the file.
+   * @throws FactoryFailureException  If the creation of objects fails due to any reason.
    */
-  public void setExceptionHandler(Consumer<Exception> errorHandler) {
-    this.errorHandler = errorHandler;
-  }
+  private List<T> parse(Reader read, CreatorFromRow<T> creator)
+          throws IOException, FactoryFailureException {
+    // we wrap our Reader object as a BufferedReader so that we can read
+    BufferedReader bufferReader = new BufferedReader(read);
 
-  /**
-   * Main function to parse the CSV and convert each row into type T.
-   *
-   * @return List of type T created from the rows of CSV.
-   * @throws IOException If I/O error.
-   * @throws FactoryFailureException If creation of object fails or other misc errors.
-   */
-  public List<T> parse() throws IOException, FactoryFailureException {
-    List<T> results = new ArrayList<>();
-    String line;
-    try {
-      while ((line = reader.readLine()) != null) {
-        try {
-          List<String> row = parseLine(line);
-          T obj = row_creator.create(row);
-          results.add(obj);
-        } catch (FactoryFailureException e) {
-          handleException(e);
-        }
+    // reads the first line
+    String line = bufferReader.readLine();
+
+    while ((line != null)) {
+      String[] lineContent = this.csvRegex.split(line);
+
+      // initializes the column size
+      if (this.initialColumnSize == -1) {
+        this.initialColumnSize = lineContent.length;
       }
-    } catch (IOException e) {
-      handleException(e);
-    } finally {
-      closeReader();
-    }
-    return results;
-  }
 
-  /**
-   * Custom Exception handling to allow developer to edit!
-   *
-   * @param e The exception we want to customize.
-   * @throws FactoryFailureException Default option if none is set by developer
-   */
-  private void handleException(Exception e) throws FactoryFailureException, IOException {
-    if (errorHandler != null) {
-      errorHandler.accept(e);
-    } else {
-      defaultErrorHandler(e);
-    }
-  }
-
-  /**
-   * Default error handler if none is set.
-   *
-   * @param e The exception to handle.
-   */
-  private void defaultErrorHandler(Exception e) throws FactoryFailureException, IOException {
-    // Rethrow the exception if it's a FactoryFailureException or IOException
-    if (e instanceof FactoryFailureException) {
-      throw (FactoryFailureException) e;
-    } else if (e instanceof IOException) {
-      throw (IOException) e;
-    } else {
-      // Developer can log and add another exception if they want to here.
-      throw new FactoryFailureException(
-          "Error encountered: " + e.getMessage(), Collections.emptyList());
-    }
-  }
-
-  /**
-   * Basic function for closing ofBufferedReader.
-   *
-   * @throws IOException If error occurs when closed.
-   */
-  private void closeReader() throws IOException {
-    try {
-      reader.close();
-    } catch (IOException e) {
-      if (errorHandler != null) {
-        errorHandler.accept(e);
-      } else {
-        throw e;
+      for (int i = 0; i < lineContent.length; i++) {
+        lineContent[i] = this.postprocess(lineContent[i]).trim();
       }
-    }
-  }
-  /**
-   * Parser Function by line.
-   *
-   * @param line The line to parse.
-   * @return A list of strings which are the fields in the line.
-   */
-  private List<String> parseLine(String line) throws FactoryFailureException {
-    if (line.trim().isEmpty()) {
-      return Collections.emptyList();
-    }
-    List<String> keys = new ArrayList<>();
-    boolean inQuotes = false;
-    StringBuilder stringBuilder = new StringBuilder();
-    char[] chars = line.toCharArray();
+      // convert for the create method
+      List<String> rowList = Arrays.asList(lineContent);
 
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
-      if (c == quoteChar) {
-        if (inQuotes && i < chars.length - 1 && chars[i + 1] == quoteChar) {
-          stringBuilder.append(c);
-          i++; // Skip the escaped quote.
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (c == delimiter && !inQuotes) {
-        keys.add(stringBuilder.toString().trim());
-        stringBuilder.setLength(0); // Resetting field builder for next entry in for loop.
-      } else {
-        stringBuilder.append(c);
+      // check if they are the same size
+      if (this.initialColumnSize != rowList.size()) {
+        throw new IndexOutOfBoundsException("Inconsistent number of columns in CSV file");
       }
+
+      // output of the create method
+      T result = creator.create(rowList);
+
+      // store the output
+      this.parseArray.add(result);
+
+      // next iteration
+      line = bufferReader.readLine();
     }
-    keys.add(stringBuilder.toString().trim());
-    return keys;
+
+    return this.parseArray;
+  }
+
+  /**
+   * Elimiate a single instance of leading or trailing double-quote, and replace pairs of double
+   * quotes with singles.
+   *
+   * @param arg the string to process
+   * @return the postprocessed string
+   */
+  public static String postprocess(String arg) {
+    return arg
+            // Remove extra spaces at beginning and end of the line
+            .trim()
+            // Remove a beginning quote, if present
+            .replaceAll("^\"", "")
+            // Remove an ending quote, if present
+            .replaceAll("\"$", "")
+            // Replace double-double-quotes with double-quotes
+            .replaceAll("\"\"", "\"");
+  }
+
+  /**
+   * Get the parse data
+   * @return
+   */
+  public List<T> getParseArray() {
+    return this.parseArray;
   }
 }
