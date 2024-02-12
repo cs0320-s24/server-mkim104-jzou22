@@ -44,7 +44,7 @@ public class BroadbandDataHandler implements RequestHandler {
       String countyCode = censusApiAdapter.getCountyCode(stateName, countyName);
       if (countyCode == null) {
         response.status(400);
-        return "Invalid county name provided for the given state.";
+        return "Invalid county name provided for the given state:";
       }
 
       List<List<String>> broadbandData = censusApiAdapter.fetchBroadbandData(stateCode, countyCode);
