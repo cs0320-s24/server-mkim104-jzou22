@@ -2,12 +2,12 @@ package edu.brown.cs.student;
 
 import static org.junit.Assert.*;
 
-import edu.brown.cs.student.main.creators.AnimalCreator;
-import edu.brown.cs.student.main.creators.ClothesCreator;
-import edu.brown.cs.student.main.csvparser.CSVParser;
-import edu.brown.cs.student.main.domain.Animal;
-import edu.brown.cs.student.main.domain.Clothes;
-import edu.brown.cs.student.main.errorhandler.FactoryFailureException;
+import edu.brown.cs.student.main.csv.creator.AnimalCreator;
+import edu.brown.cs.student.main.csv.creator.ClothesCreator;
+import edu.brown.cs.student.main.csv.parser.CSVParser;
+import edu.brown.cs.student.main.csv.creator.Animal;
+import edu.brown.cs.student.main.csv.creator.Clothes;
+import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -70,7 +70,8 @@ public class CSVParserTest {
   @Test
   public void testWithHeaders() throws Exception {
     String csvData = "Name,Age\nLatrice,30\nBobette,25";
-    CSVParser<List<String>> parser = new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', true);
+    CSVParser<List<String>> parser =
+        new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', true);
     List<List<String>> results = parser.parse();
     assertEquals("Expected 3 rows of data, including header", 3, results.size());
     assertEquals("Latrice", results.get(1).get(0));
@@ -80,13 +81,13 @@ public class CSVParserTest {
   @Test
   public void testWithoutHeaders() throws Exception {
     String csvData = "Latrice,30\nBobette,25";
-    CSVParser<List<String>> parser = new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', false);
+    CSVParser<List<String>> parser =
+        new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', false);
     List<List<String>> results = parser.parse();
     assertEquals("Expected 2 rows of data", 2, results.size());
     assertEquals("Latrice", results.get(0).get(0));
     assertEquals("30", results.get(0).get(1));
   }
-
 
   @Test(expected = IOException.class)
   public void testFileNotFound() throws Exception {

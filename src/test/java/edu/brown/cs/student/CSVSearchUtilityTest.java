@@ -2,7 +2,7 @@ package edu.brown.cs.student;
 
 import static org.junit.Assert.*;
 
-import edu.brown.cs.student.main.csvsearch.CSVSearch;
+import edu.brown.cs.student.main.csv.search.CSVSearch;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import org.junit.After;
@@ -74,7 +74,9 @@ public class CSVSearchUtilityTest {
   public void testInvalidColumnIndexSearch() throws Exception {
     CSVSearch csvSearch = new CSVSearch("data/tests/animals_headers.csv", true);
     csvSearch.search("Fox", "100"); // Assuming 100 is an out-of-bounds index
-    assertTrue("Expected 'No match found.' message for invalid column index", outContent.toString().contains("No match found."));
+    assertTrue(
+        "Expected 'No match found.' message for invalid column index",
+        outContent.toString().contains("No match found."));
   }
 
   @Test
