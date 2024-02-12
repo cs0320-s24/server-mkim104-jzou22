@@ -52,11 +52,12 @@
       <artifactId>moshi-adapters</artifactId>
       <version>1.13.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>31.0.1-jre</version>
+    </dependency>
 
-    <!--
-           Spark is a lightweight framework for creating web applications.
-           Spark is most commonly used to create APIs and websites.
-    -->
     <dependency>
       <groupId>com.sparkjava</groupId>
       <artifactId>spark-core</artifactId>

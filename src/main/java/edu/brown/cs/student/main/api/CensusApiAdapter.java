@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.api;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.cache.ACSDataCache;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,11 +18,13 @@ public class CensusApiAdapter {
   private final Moshi moshi;
   private Map<String, String> stateCodes = new HashMap<>();
   private final JsonAdapter<List<List<String>>> jsonAdapter;
+  private ACSDataCache acsDataCache;
 
-  public CensusApiAdapter() {
+  public CensusApiAdapter(ACSDataCache cache) {
     this.moshi = new Moshi.Builder().build();
     Type listOfListsOfStringType = Types.newParameterizedType(List.class, List.class, String.class);
     this.jsonAdapter = moshi.adapter(listOfListsOfStringType);
+    this.acsDataCache = cache;
     fetchAndCacheStateCodes();
   }
 
@@ -38,26 +41,32 @@ public class CensusApiAdapter {
       }
       reader.close();
       List<List<String>> data = jsonAdapter.fromJson(json.toString());
-      System.out.println("Fetching state codes...");
       if (data != null) {
         for (List<String> entry : data.subList(1, data.size())) {
-          System.out.println("Caching state code for: " + entry.get(0) + " as " + entry.get(1));
           stateCodes.put(entry.get(0), entry.get(1));
+          acsDataCache.put("stateCode:" + entry.get(0), entry.get(1)); // Cache the state codes
         }
       }
     } catch (Exception e) {
-      System.out.println("Error fetching state codes: " + e.getMessage());
       e.printStackTrace();
     }
   }
 
   public String getStateCode(String stateName) {
-    String code = stateCodes.get(stateName);
-    System.out.println("Resolved state code for " + stateName + ": " + code);
-    return code;
+    String cachedCode = (String) acsDataCache.getIfPresent("stateCode:" + stateName);
+    if (cachedCode != null) {
+      return cachedCode;
+    }
+    // If not in cache, return directly from the local map/handle the miss
+    return stateCodes.get(stateName);
   }
 
   public String getCountyCode(String stateName, String countyName) throws IOException {
+    String cacheKey = "countyCode:" + stateName + ":" + countyName;
+    String cachedCode = (String) acsDataCache.getIfPresent(cacheKey);
+    if (cachedCode != null) {
+      return cachedCode;
+    }
     String stateCode = getStateCode(stateName);
     if (stateCode == null) {
       throw new IOException("State code not found for state name: " + stateName);
@@ -75,33 +84,38 @@ public class CensusApiAdapter {
     }
     reader.close();
     List<List<String>> counties = jsonAdapter.fromJson(json.toString());
-    System.out.println("Fetching county code for " + countyName + " in " + stateName);
     if (counties != null) {
       for (List<String> county : counties.subList(1, counties.size())) {
-        System.out.println("Checking county: " + county.get(0));
         if (county.get(0).contains(countyName)) {
-          System.out.println("Found code for " + countyName + ": " + county.get(2));
+          acsDataCache.put(cacheKey, county.get(2)); // Cache the found county code
           return county.get(2);
         }
       }
     }
-    System.out.println("County code not found for " + countyName);
-    return null;
+    return null; // County code not found
   }
 
   public List<List<String>> fetchBroadbandData(String state, String county) throws IOException {
+    String cacheKey = "broadbandData:" + state + ":" + county;
+    List<List<String>> cachedData = (List<List<String>>) acsDataCache.getIfPresent(cacheKey);
+    if (cachedData != null) {
+      return cachedData;
+    }
+
     String urlString = constructApiUrl(state, county);
-    String jsonResponse = makeApiRequest(urlString); // Fetch raw JSON string
+    String jsonResponse = makeApiRequest(urlString);
     List<List<String>> data = jsonAdapter.fromJson(jsonResponse);
-    return data; // Return the parsed data
+    if (data != null && !data.isEmpty()) {
+      acsDataCache.put(cacheKey, data); // Cache the broadband data
+    }
+    return data;
   }
 
   private String constructApiUrl(String state, String countyCodeWildcard) {
     String baseApiUrl = "https://api.census.gov/data/2021/acs/acs1/subject";
     String variables = "get=NAME,S2802_C03_022E";
     String forCounty = "for=county:" + (countyCodeWildcard.equals("*") ? "*" : countyCodeWildcard);
-    String inState = "in=state:" + state; // State code
-
+    String inState = "in=state:" + state;
     return String.format("%s?%s&%s&%s", baseApiUrl, variables, forCounty, inState);
   }
 
@@ -109,7 +123,6 @@ public class CensusApiAdapter {
     URL url = new URL(urlString);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
-
     StringBuilder response = new StringBuilder();
     try (BufferedReader reader =
         new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -120,7 +133,6 @@ public class CensusApiAdapter {
     } finally {
       connection.disconnect();
     }
-    System.out.println(response.toString());
     return response.toString();
   }
 }
