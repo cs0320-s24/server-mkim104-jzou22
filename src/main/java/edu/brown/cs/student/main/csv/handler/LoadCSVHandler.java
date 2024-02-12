@@ -9,19 +9,25 @@ import java.io.FileReader;
 import java.util.List;
 
 public class LoadCSVHandler implements RequestHandler {
-    File recentFile = null;
-    Boolean loaded = false;
-    private List<List<String>> data; // Store the CSV data
+    private static List<List<String>> data; // Store the CSV data
+    private static Boolean loaded = false;
+    public LoadCSVHandler() {
+    }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
         String filePath = request.queryParams("filepath");
-
-        // initialize instance variables for the other csv handlers
-        String[] filePathSplit = filePath.split("/");
+        System.out.println(1);
 
         // Set the restricted directory path.
         String restrictedDirectory = "data";
+        if (filePath == null) {
+            response.status(400);
+            return "Loading A CSV must take in a file path";
+        }
+
+        // Checks for the file to be in the correct directory
+        String[] filePathSplit = filePath.split("/");
 
         // Check that the file is within the restricted directory
         if (!filePathSplit[0].equals(restrictedDirectory)) {
@@ -48,11 +54,18 @@ public class LoadCSVHandler implements RequestHandler {
         this.data = parser.parse();
 
         // uses these variables for other handlers
-        this.recentFile = file;
-        this.loaded = true;
-
-        return null;
+        loaded = true;
+        return "CSV Loaded With Status: " + loaded.toString();
     }
 
+    /**
+     * Getting the data
+     */
+    public List<List<String>> getData(){
+        return this.data;
+    }
 
+    public Boolean getLoaded() {
+        return this.loaded;
+    }
 }
