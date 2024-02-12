@@ -9,7 +9,6 @@ import edu.brown.cs.student.main.csv.parser.CSVParser;
 import edu.brown.cs.student.main.server.RequestHandler;
 import edu.brown.cs.student.main.server.Server;
 import edu.brown.cs.student.main.server.SparkServer;
-
 public class Main {
   public static void main(String[] args) {
     CensusApiAdapter adapter = new CensusApiAdapter();
@@ -23,17 +22,13 @@ public class Main {
 
     // Create an instances of CSVHandlers
     LoadCSVHandler loadCSVHandler = new LoadCSVHandler();
-    ViewCSVHandler viewCSVHandler = new ViewCSVHandler();
-    SearchCSVHandler searchCSVHandler = new SearchCSVHandler();
-
-
-
+    ViewCSVHandler viewCSVHandler = new ViewCSVHandler(loadCSVHandler);
+    SearchCSVHandler searchCSVHandler = new SearchCSVHandler(loadCSVHandler.getLoaded());
 
     // Registering the broadband endpoint with the new handler
     server.registerHandler("/broadband", broadbandDataHandler);
 
     // Registering the csv endpoint with the new handler
-    RequestHandler LoadCSVHandler;
     server.registerHandler("/loadcsv", loadCSVHandler);
     server.registerHandler("/viewcsv", viewCSVHandler);
     server.registerHandler("/searchcsv", searchCSVHandler);

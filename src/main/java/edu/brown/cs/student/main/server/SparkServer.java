@@ -4,7 +4,6 @@ import spark.Service;
 
 public class SparkServer implements Server {
   private Service http;
-
   public SparkServer() {
     this.http = Service.ignite();
   }
