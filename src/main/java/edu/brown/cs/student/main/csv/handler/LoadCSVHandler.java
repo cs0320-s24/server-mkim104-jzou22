@@ -11,13 +11,13 @@ import java.util.List;
 public class LoadCSVHandler implements RequestHandler {
     private static List<List<String>> data; // Store the CSV data
     private static Boolean loaded = false;
+    private static String filePath;
     public LoadCSVHandler() {
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
         String filePath = request.queryParams("filepath");
-        System.out.println(1);
 
         // Set the restricted directory path.
         String restrictedDirectory = "data";
@@ -42,19 +42,17 @@ public class LoadCSVHandler implements RequestHandler {
             return "File does not exist";
         }
 
-        // initialize the parser and read in the current csv file path
-        char delimiter = ',';
-        // delimiter for CSV's with double quotes.
-        char doubleQuotes = '"';
-
         // parses the data into a list of strings
-        CSVParser<List<String>> parser = new CSVParser<>(new FileReader(filePath), row -> row, delimiter, doubleQuotes, true);
+        CSVParser<List<String>> parser = new CSVParser<>(new FileReader(filePath), row -> row);
 
         // stores the parsed data
-        this.data = parser.parse();
+        this.data = parser.getParseArray() ;
 
         // uses these variables for other handlers
-        loaded = true;
+        this.loaded = true;
+
+        this.filePath = filePath;
+
         return "CSV Loaded With Status: " + loaded.toString();
     }
 
@@ -67,5 +65,8 @@ public class LoadCSVHandler implements RequestHandler {
 
     public Boolean getLoaded() {
         return this.loaded;
+    }
+    public String getFile() {
+        return this.filePath;
     }
 }
