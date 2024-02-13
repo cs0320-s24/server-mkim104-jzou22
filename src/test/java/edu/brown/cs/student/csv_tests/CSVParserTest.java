@@ -1,4 +1,4 @@
-package edu.brown.cs.student;
+package edu.brown.cs.student.csv_tests;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
