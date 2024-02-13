@@ -1,96 +1,232 @@
-//package edu.brown.cs.student;
-//
-//import static org.junit.Assert.*;
-//
-//import edu.brown.cs.student.main.csv.creator.AnimalCreator;
-//import edu.brown.cs.student.main.csv.creator.ClothesCreator;
-//import edu.brown.cs.student.main.csv.parser.CSVParser;
-//import edu.brown.cs.student.main.csv.creator.Animal;
-//import edu.brown.cs.student.main.csv.creator.Clothes;
-//import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
-//import java.io.FileReader;
-//import java.io.IOException;
-//import java.io.StringReader;
-//import java.util.List;
-//import org.junit.Test;
-//
-//public class CSVParserTest {
-//
-//  @Test
-//  public void testParseAnimalsWithoutHeaders() throws IOException, FactoryFailureException {
-//    try (FileReader reader = new FileReader("data/tests/animals_no_headers.csv")) {
-//      CSVParser<Animal> parser = new CSVParser<>(reader, new AnimalCreator(), ',', '"', false);
-//      List<Animal> animals = parser.parse();
-//      assertEquals(3, animals.size());
-//      assertEquals("Dog", animals.get(0).getName());
-//      assertEquals("Labrador", animals.get(0).getSpecies());
-//    }
-//  }
-//
-//  @Test
-//  public void testParseClothesWithoutHeaders() throws IOException, FactoryFailureException {
-//    try (FileReader reader = new FileReader("data/tests/clothes_no_headers.csv")) {
-//      CSVParser<Clothes> parser = new CSVParser<>(reader, new ClothesCreator(), ',', '"', false);
-//      List<Clothes> clothes = parser.parse();
-//      assertEquals(3, clothes.size());
-//      assertEquals("T-Shirt", clothes.get(0).getName());
-//    }
-//  }
-//
-//  @Test
-//  public void testCSVWithDifferentReaderTypes() throws IOException, FactoryFailureException {
-//    String csvContent = "1,Dog,Labrador\n2,Cat,Siamese";
-//    try (StringReader stringReader = new StringReader(csvContent)) {
-//      CSVParser<Animal> parser =
-//          new CSVParser<>(stringReader, new AnimalCreator(), ',', '"', false);
-//      List<Animal> animals = parser.parse();
-//      assertNotNull(animals);
-//      assertEquals(2, animals.size());
-//    }
-//  }
-//
-//  @Test(expected = FactoryFailureException.class)
-//  public void testCSVWithInconsistentColumnCount() throws IOException, FactoryFailureException {
-//    String filePathInconsistent = "data/tests/animals_inconsistent_col.csv";
-//    try (FileReader fileReader = new FileReader(filePathInconsistent)) {
-//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"', false);
-//      parser.parse();
-//    }
-//  }
-//
-//  @Test(expected = FactoryFailureException.class)
-//  public void testCSVOutsideProtectedDirectory() throws IOException, FactoryFailureException {
-//    String filePathOutside = "external_tests/outside.csv";
-//    try (FileReader fileReader = new FileReader(filePathOutside)) {
-//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"', false);
-//      parser.parse();
-//    }
-//  }
-//
-//  @Test
-//  public void testWithHeaders() throws Exception {
-//    String csvData = "Name,Age\nLatrice,30\nBobette,25";
-//    CSVParser<List<String>> parser =
-//        new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', true);
-//    List<List<String>> results = parser.parse();
-//    assertEquals("Expected 3 rows of data, including header", 3, results.size());
-//    assertEquals("Latrice", results.get(1).get(0));
-//    assertEquals("30", results.get(1).get(1));
-//  }
-//
-//  @Test
-//  public void testWithoutHeaders() throws Exception {
-//    String csvData = "Latrice,30\nBobette,25";
-//    CSVParser<List<String>> parser =
-//        new CSVParser<>(new StringReader(csvData), row -> row, ',', '"', false);
-//    List<List<String>> results = parser.parse();
-//    assertEquals("Expected 2 rows of data", 2, results.size());
-//    assertEquals("Latrice", results.get(0).get(0));
-//    assertEquals("30", results.get(0).get(1));
-//  }
-//
-//  @Test(expected = IOException.class)
-//  public void testFileNotFound() throws Exception {
-//    new CSVParser<>(new FileReader("nonexistent.csv"), row -> row, ',', '"', true).parse();
-//  }
-//}
+package edu.brown.cs.student;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
+import edu.brown.cs.student.main.csv.parser.CSVParser;
+import edu.brown.cs.student.main.csv.parser.CreatorFromRow;
+import edu.brown.cs.student.main.csv.parser.RowCreator;
+import edu.brown.cs.student.main.testing.creators.IntegerCreator;
+import edu.brown.cs.student.main.testing.creators.StringCreator;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.brown.cs.student.main.testing.Student;
+import edu.brown.cs.student.main.testing.creators.StudentCreator;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.testng.Assert;
+
+/**
+ * A test class that tests the feature and different inputs of the CSVParser
+ */
+public class CSVParserTest {
+    private static List<List<String>> groceryList;
+    private static List<List<String>> coffeeList;
+
+    // Initial Data
+    @BeforeAll
+    public static void initialize() {
+        groceryList = new ArrayList<>();
+        coffeeList = new ArrayList<>();
+
+        ArrayList<String> grocery1 = new ArrayList<>();
+        grocery1.add("Item");
+        grocery1.add("Category");
+        grocery1.add("Price");
+        groceryList.add(grocery1);
+
+        ArrayList<String> grocery2 = new ArrayList<>();
+        grocery2.add("Apple");
+        grocery2.add("Fruit");
+        grocery2.add("1.99");
+        groceryList.add(grocery2);
+
+        ArrayList<String> grocery3 = new ArrayList<>();
+        grocery3.add("Banana");
+        grocery3.add("Fruit");
+        grocery3.add("0.99");
+        groceryList.add(grocery3);
+
+        ArrayList<String> grocery4 = new ArrayList<>();
+        grocery4.add("Carrot");
+        grocery4.add("Vegetable");
+        grocery4.add("0.50");
+        groceryList.add(grocery4);
+
+        ArrayList<String> grocery5 = new ArrayList<>();
+        grocery5.add("Milk");
+        grocery5.add("Dairy");
+        grocery5.add("2.49");
+        groceryList.add(grocery5);
+
+        // Adding coffee items
+        ArrayList<String> coffee1 = new ArrayList<>();
+        coffee1.add("Starbucks");
+        coffee1.add("Coffee");
+        coffee1.add("3.50");
+        coffeeList.add(coffee1);
+
+        ArrayList<String> coffee2 = new ArrayList<>();
+        coffee2.add("Dunkin Donuts");
+        coffee2.add("Coffee");
+        coffee2.add("2.99");
+        coffeeList.add(coffee2);
+
+        ArrayList<String> coffee3 = new ArrayList<>();
+        coffee3.add("Costa Coffee");
+        coffee3.add("Coffee");
+        coffee3.add("3.20");
+        coffeeList.add(coffee3);
+
+        ArrayList<String> coffee4 = new ArrayList<>();
+        coffee4.add("Tim Hortons");
+        coffee4.add("Coffee");
+        coffee4.add("2.75");
+        coffeeList.add(coffee4);
+
+        ArrayList<String> coffee5 = new ArrayList<>();
+        coffee5.add("Cafe Nero");
+        coffee5.add("Coffee");
+        coffee5.add("3.10");
+        coffeeList.add(coffee5);
+    }
+
+    // Regular Parsing
+    @Test
+    public void defaultParser() throws FactoryFailureException, IOException {
+        String groceryCSVFilePath = "data/user/grocery.csv";
+        File groceryFile = new File(groceryCSVFilePath);
+        FileReader groceryReader = new FileReader(groceryFile);
+        CreatorFromRow rowCreator = new RowCreator();
+        CSVParser<List<String>> groceryParse = new CSVParser(groceryReader, rowCreator);
+        Assert.assertEquals(groceryList, groceryParse.getParseArray());
+    }
+
+    // Different Reader Parsing
+    @Test
+    public void readerParser() throws IOException, FactoryFailureException {
+        String groceryCSVString =
+                "Item,Category,Price\n"
+                        + "Apple,Fruit,1.99\n"
+                        + "Banana,Fruit,0.99\n"
+                        + "Carrot,Vegetable,0.50\n"
+                        + "Milk,Dairy,2.49";
+        StringReader groceryReader = new StringReader(groceryCSVString);
+        CreatorFromRow rowCreator = new RowCreator();
+        CSVParser<List<String>> groceryParse = new CSVParser(groceryReader, rowCreator);
+        Assert.assertEquals(groceryList, groceryParse.getParseArray());
+    }
+
+    // Empty File Reader
+    @Test
+    public void emptyParser() throws IOException, FactoryFailureException {
+        String emptyCSVFilePath = "data/user/empty.csv";
+        File emptyFile = new File(emptyCSVFilePath);
+        FileReader emptyReader = new FileReader(emptyFile);
+        CreatorFromRow rowCreator = new RowCreator();
+        CSVParser<List<String>> emptyParse = new CSVParser(emptyReader, rowCreator);
+        Assert.assertTrue(emptyParse.getParseArray().isEmpty());
+    }
+
+    // Invalid File Reader
+    @Test
+    public void invalidParser() {
+        String invalidCSVFilePath = "data/does/not/exist.csv";
+        File invalidFile = new File(invalidCSVFilePath);
+        assertThrows(
+                FileNotFoundException.class,
+                () -> {
+                    FileReader invalidReader = new FileReader(invalidFile);
+                    CreatorFromRow rowCreator = new RowCreator();
+                    new CSVParser<>(invalidReader, rowCreator);
+                });
+    }
+
+    // Without Column Header
+    @Test
+    public void withoutHeaerParser() throws IOException, FactoryFailureException {
+        String withoutCSVFilePath = "data/user/without.csv";
+        File withoutFile = new File(withoutCSVFilePath);
+        FileReader withoutReader = new FileReader(withoutFile);
+        CreatorFromRow rowCreator = new RowCreator();
+        CSVParser<List<String>> withoutParse = new CSVParser(withoutReader, rowCreator);
+        Assert.assertEquals(coffeeList, withoutParse.getParseArray());
+    }
+
+    // Outside Data Folder Data
+    @Test
+    public void outsideProtectedFile() {
+        String outsideCSVFilePath = "outside/does/not/exist.csv";
+        File outsideFile = new File(outsideCSVFilePath);
+        assertThrows(
+                FileNotFoundException.class,
+                () -> {
+                    FileReader outsideReader = new FileReader(outsideFile);
+                    CreatorFromRow rowCreator = new RowCreator();
+                    new CSVParser<>(outsideReader, rowCreator);
+                });
+    }
+
+    // Inconsistent Columns
+    @Test
+    public void inconsistentColumn() throws IOException, FactoryFailureException {
+        String inconsistentFileName = "data/malformed/malformed_signs.csv";
+        File inconsistentFile = new File(inconsistentFileName);
+        FileReader inconsistentReader = new FileReader(inconsistentFile);
+        CreatorFromRow rowCreator = new RowCreator();
+        try {
+            new CSVParser(inconsistentReader, rowCreator);
+            Assert.fail("Expected IndexOutOfBoundsException was not thrown");
+        } catch (IndexOutOfBoundsException e) {
+            Assert.assertEquals("Inconsistent number of columns in CSV file", e.getMessage());
+        }
+    }
+
+    // Test The String Creator
+    @Test
+    public void stringCreator() throws IOException, FactoryFailureException {
+        String groceryCSVFilePath = "data/user/grocery.csv";
+        File groceryFile = new File(groceryCSVFilePath);
+        FileReader groceryReader = new FileReader(groceryFile);
+        CreatorFromRow stringCreator = new StringCreator();
+        CSVParser<List<String>> groceryParse = new CSVParser(groceryReader, stringCreator);
+
+        List<String> expectedList =
+                List.of(
+                        "Item,Category,Price",
+                        "Apple,Fruit,1.99",
+                        "Banana,Fruit,0.99",
+                        "Carrot,Vegetable,0.50",
+                        "Milk,Dairy,2.49");
+        Assert.assertEquals(expectedList, groceryParse.getParseArray());
+    }
+
+    // Test The String Creator
+    @Test
+    public void integerCreator() throws IOException, FactoryFailureException {
+        String groceryCSVFilePath = "data/user/grocery.csv";
+        File groceryFile = new File(groceryCSVFilePath);
+        FileReader groceryReader = new FileReader(groceryFile);
+        CreatorFromRow integerCreator = new IntegerCreator();
+        CSVParser<List<String>> groceryParse = new CSVParser(groceryReader, integerCreator);
+
+        List<Integer> expectedList = List.of(3, 3, 3, 3, 3);
+        Assert.assertEquals(expectedList, groceryParse.getParseArray());
+    }
+
+    // Test the Student Obejct
+    @Test
+    public void studentCreator() throws IOException, FactoryFailureException {
+        String studentCSVFilePath = "data/user/student.csv";
+        File studentFile = new File(studentCSVFilePath);
+        FileReader studentReader = new FileReader(studentFile);
+        CreatorFromRow studentCreator = new StudentCreator();
+        CSVParser<Student> studentParse = new CSVParser(studentReader, studentCreator);
+
+        Student student1 = new Student("john", "20", "computer science");
+
+        Assert.assertTrue(student1.studentEquals(studentParse.getParseArray().get(0)));
+    }
+}
