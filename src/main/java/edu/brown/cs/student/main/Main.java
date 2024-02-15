@@ -3,17 +3,13 @@ package edu.brown.cs.student.main;
 import edu.brown.cs.student.main.api.BroadbandDataHandler;
 import edu.brown.cs.student.main.api.CensusApiAdapter;
 import edu.brown.cs.student.main.cache.ACSDataCache;
+import edu.brown.cs.student.main.csv.handler.LoadCSVHandler;
+import edu.brown.cs.student.main.csv.handler.SearchCSVHandler;
+import edu.brown.cs.student.main.csv.handler.ViewCSVHandler;
 import edu.brown.cs.student.main.server.Server;
 import edu.brown.cs.student.main.server.SparkServer;
 import java.util.concurrent.TimeUnit;
 
-import edu.brown.cs.student.main.csv.handler.LoadCSVHandler;
-import edu.brown.cs.student.main.csv.handler.SearchCSVHandler;
-import edu.brown.cs.student.main.csv.handler.ViewCSVHandler;
-import edu.brown.cs.student.main.csv.parser.CSVParser;
-import edu.brown.cs.student.main.server.RequestHandler;
-import edu.brown.cs.student.main.server.Server;
-import edu.brown.cs.student.main.server.SparkServer;
 public class Main {
   public static void main(String[] args) {
     ACSDataCache acsDataCache = new ACSDataCache(100, 30, TimeUnit.MINUTES);
@@ -27,16 +23,11 @@ public class Main {
 
     server.registerHandler("/broadband", broadbandDataHandler);
 
-    server.registerHandler(
-        "/csv", broadbandDataHandler);
+    server.registerHandler("/csv", broadbandDataHandler);
     // Create an instances of CSVHandlers
     LoadCSVHandler loadCSVHandler = new LoadCSVHandler();
     ViewCSVHandler viewCSVHandler = new ViewCSVHandler(loadCSVHandler);
     SearchCSVHandler searchCSVHandler = new SearchCSVHandler(loadCSVHandler);
-
-    // Registering the broadband endpoint with the new handler
-    server.registerHandler("/broadband", broadbandDataHandler);
-
     // Registering the csv endpoint with the new handler
     server.registerHandler("/loadcsv", loadCSVHandler);
     server.registerHandler("/viewcsv", viewCSVHandler);
