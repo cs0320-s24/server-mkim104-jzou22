@@ -9,10 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
 /**
- * This is the user class which is responsible for the parsing of a CSV.
- * It uses a buffered reader to read each line, and then you use a regex.
+ * This is the user class which is responsible for the parsing of a CSV. It uses a buffered reader
+ * to read each line, and then you use a regex.
  *
  * @param <T>
  */
@@ -20,33 +19,33 @@ public class CSVParser<T> {
   List<T> parseArray = new ArrayList<>();
   int initialColumnSize = -1;
   static final Pattern csvRegex =
-          Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
+      Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
 
   /**
-   * Parse constructor which takes in the reader object and the creator type
-   * and then parses.
+   * Parse constructor which takes in the reader object and the creator type and then parses.
+   *
    * @param read
    * @param creator
    * @throws IOException
    * @throws FactoryFailureException
    */
   public CSVParser(Reader read, CreatorFromRow<T> creator)
-          throws IOException, FactoryFailureException {
+      throws IOException, FactoryFailureException {
     this.parse(read, creator);
   }
 
   /**
-   * Parses the content of a CSV file read from the provided Reader object,
-   * using the specified CreatorFromRow for creating objects from each row.
+   * Parses the content of a CSV file read from the provided Reader object, using the specified
+   * CreatorFromRow for creating objects from each row.
    *
-   * @param read    The Reader object containing the CSV file content.
+   * @param read The Reader object containing the CSV file content.
    * @param creator The CreatorFromRow implementation to create objects from CSV rows.
-   * @return        A List of objects created from the CSV rows.
-   * @throws IOException              If an I/O error occurs while reading the file.
-   * @throws FactoryFailureException  If the creation of objects fails due to any reason.
+   * @return A List of objects created from the CSV rows.
+   * @throws IOException If an I/O error occurs while reading the file.
+   * @throws FactoryFailureException If the creation of objects fails due to any reason.
    */
   private List<T> parse(Reader read, CreatorFromRow<T> creator)
-          throws IOException, FactoryFailureException {
+      throws IOException, FactoryFailureException {
     // we wrap our Reader object as a BufferedReader so that we can read
     BufferedReader bufferReader = new BufferedReader(read);
 
@@ -94,18 +93,19 @@ public class CSVParser<T> {
    */
   public static String postprocess(String arg) {
     return arg
-            // Remove extra spaces at beginning and end of the line
-            .trim()
-            // Remove a beginning quote, if present
-            .replaceAll("^\"", "")
-            // Remove an ending quote, if present
-            .replaceAll("\"$", "")
-            // Replace double-double-quotes with double-quotes
-            .replaceAll("\"\"", "\"");
+        // Remove extra spaces at beginning and end of the line
+        .trim()
+        // Remove a beginning quote, if present
+        .replaceAll("^\"", "")
+        // Remove an ending quote, if present
+        .replaceAll("\"$", "")
+        // Replace double-double-quotes with double-quotes
+        .replaceAll("\"\"", "\"");
   }
 
   /**
    * Get the parse data
+   *
    * @return
    */
   public List<T> getParseArray() {

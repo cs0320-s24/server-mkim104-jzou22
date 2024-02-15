@@ -1,20 +1,20 @@
-//package edu.brown.cs.student;
+// package edu.brown.cs.student;
 //
-//import static org.junit.Assert.*;
+// import static org.junit.Assert.*;
 //
-//import edu.brown.cs.student.main.csv.creator.AnimalCreator;
-//import edu.brown.cs.student.main.csv.creator.ClothesCreator;
-//import edu.brown.cs.student.main.csv.parser.CSVParser;
-//import edu.brown.cs.student.main.csv.creator.Animal;
-//import edu.brown.cs.student.main.csv.creator.Clothes;
-//import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
-//import java.io.FileReader;
-//import java.io.IOException;
-//import java.io.StringReader;
-//import java.util.List;
-//import org.junit.Test;
+// import edu.brown.cs.student.main.csv.creator.AnimalCreator;
+// import edu.brown.cs.student.main.csv.creator.ClothesCreator;
+// import edu.brown.cs.student.main.csv.parser.CSVParser;
+// import edu.brown.cs.student.main.csv.creator.Animal;
+// import edu.brown.cs.student.main.csv.creator.Clothes;
+// import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
+// import java.io.FileReader;
+// import java.io.IOException;
+// import java.io.StringReader;
+// import java.util.List;
+// import org.junit.Test;
 //
-//public class CSVParserTest {
+// public class CSVParserTest {
 //
 //  @Test
 //  public void testParseAnimalsWithoutHeaders() throws IOException, FactoryFailureException {
@@ -53,7 +53,8 @@
 //  public void testCSVWithInconsistentColumnCount() throws IOException, FactoryFailureException {
 //    String filePathInconsistent = "data/tests/animals_inconsistent_col.csv";
 //    try (FileReader fileReader = new FileReader(filePathInconsistent)) {
-//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"', false);
+//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"',
+// false);
 //      parser.parse();
 //    }
 //  }
@@ -62,7 +63,8 @@
 //  public void testCSVOutsideProtectedDirectory() throws IOException, FactoryFailureException {
 //    String filePathOutside = "external_tests/outside.csv";
 //    try (FileReader fileReader = new FileReader(filePathOutside)) {
-//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"', false);
+//      CSVParser<Animal> parser = new CSVParser<>(fileReader, new AnimalCreator(), ',', '"',
+// false);
 //      parser.parse();
 //    }
 //  }
@@ -93,4 +95,4 @@
 //  public void testFileNotFound() throws Exception {
 //    new CSVParser<>(new FileReader("nonexistent.csv"), row -> row, ',', '"', true).parse();
 //  }
-//}
+// }
