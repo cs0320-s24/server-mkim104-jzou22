@@ -1,7 +1,5 @@
 package edu.brown.cs.student.main.csv.parser;
-
 import edu.brown.cs.student.main.csv.errorhandler.FactoryFailureException;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,5 +9,12 @@ import java.util.List;
  * <p>Your parser class constructor should take a second parameter of this generic interface type.
  */
 public interface CreatorFromRow<T> {
-  T create(List<String> row) throws FactoryFailureException, IOException;
+    /**
+     * A method that must be defined when implementing this interface. This allows for greater generic
+     * object conversion
+     * @param row
+     * @return
+     * @throws FactoryFailureException
+     */
+    T create(List<String> row) throws FactoryFailureException;
 }
