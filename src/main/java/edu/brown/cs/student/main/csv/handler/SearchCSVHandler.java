@@ -5,14 +5,28 @@ import edu.brown.cs.student.main.server.RequestHandler;
 import java.net.URLDecoder;
 import spark.Request;
 import spark.Response;
-
+/**
+ * This class handles HTTP requests to search within a loaded CSV file.
+ * It implements the RequestHandler interface to process incoming requests.
+ */
 public class SearchCSVHandler implements RequestHandler {
   private final LoadCSVHandler loadCSVHandler;
-
+  /**
+   * Constructs a SearchCSVHandler object with the specified LoadCSVHandler.
+   *
+   * @param loadCSVHandler The handler for loading CSV files.
+   */
   public SearchCSVHandler(LoadCSVHandler loadCSVHandler) {
     this.loadCSVHandler = loadCSVHandler;
   }
-
+  /**
+   * Handles the HTTP request to search within a loaded CSV file based on query parameters.
+   *
+   * @param request  The HTTP request object.
+   * @param response The HTTP response object.
+   * @return A message indicating the search results.
+   * @throws Exception if an error occurs during searching.
+   */
   // example query:
   // http://localhost:3232/searchcsv?searchValue=Rhode%20Island&header=true&columnIdentifier=City/Townd&columnType=
   @Override

@@ -11,12 +11,19 @@ import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
-
+/**
+ * This class handles HTTP requests to view the contents of a loaded CSV file in JSON format.
+ * It implements the RequestHandler interface to process incoming requests.
+ */
 public class ViewCSVHandler implements RequestHandler {
   private final LoadCSVHandler loadCSVHandler;
   private final Moshi moshi;
   private final JsonAdapter<Map<String, Object>> jsonAdapter;
-
+  /**
+   * Constructs a ViewCSVHandler object with the specified LoadCSVHandler.
+   *
+   * @param loadCSVHandler The handler for loading CSV files.
+   */
   public ViewCSVHandler(LoadCSVHandler loadCSVHandler) {
     this.loadCSVHandler = loadCSVHandler;
     this.moshi = new Moshi.Builder().build();
@@ -24,7 +31,14 @@ public class ViewCSVHandler implements RequestHandler {
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
     this.jsonAdapter = this.moshi.adapter(type);
   }
-
+  /**
+   * Handles the HTTP request to view the contents of a loaded CSV file in JSON format.
+   *
+   * @param request  The HTTP request object.
+   * @param response The HTTP response object.
+   * @return JSON representation of the CSV data.
+   * @throws Exception if an error occurs during conversion or handling.
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     // handles error
@@ -38,11 +52,12 @@ public class ViewCSVHandler implements RequestHandler {
     return jsonAdapter.toJson(jsonMap);
   }
 
+
   /**
-   * Method to convert the 2d array into a hashmap so it can be converted to a json file
+   * Converts the 2D array representing CSV data into a map for JSON conversion.
    *
-   * @param data
-   * @return
+   * @param data The 2D array representing CSV data.
+   * @return A map representing the CSV data for JSON conversion.
    */
   public Map<String, Object> convertCsvToMap(List<List<String>> data) {
     Map<String, Object> jsonMap = new HashMap<>();
