@@ -23,7 +23,6 @@ public class Main {
 
     server.registerHandler("/broadband", broadbandDataHandler);
 
-    server.registerHandler("/csv", broadbandDataHandler);
     // Create an instances of CSVHandlers
     LoadCSVHandler loadCSVHandler = new LoadCSVHandler();
     ViewCSVHandler viewCSVHandler = new ViewCSVHandler(loadCSVHandler);

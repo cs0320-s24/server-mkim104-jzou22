@@ -33,11 +33,11 @@ public class ACSDataCache {
   }
 
   public Object getIfPresent(String key) {
-    Object value = cache.getIfPresent(key);
-    return value;
+      Object value = cache.getIfPresent(key);
+      return value;
   }
 
   public void put(String key, Object value) {
-    cache.put(key, value);
+      cache.put(key, value);
   }
 }
