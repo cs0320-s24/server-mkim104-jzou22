@@ -14,13 +14,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * This class adapts the Census API to fetch state and county codes, as well as broadband data.
+ * It implements the IDataFetcher interface to provide methods for fetching codes and data.
+ */
 public class CensusApiAdapter implements IDataFetcher {
   private final Moshi moshi;
   private Map<String, String> stateCodes = new HashMap<>();
   private final JsonAdapter<List<List<String>>> jsonAdapter;
   private ACSDataCache acsDataCache;
 
+  /**
+   * Constructs a CensusApiAdapter object with the specified ACSDataCache.
+   *
+   * @param cache The cache to store fetched data.
+   */
   public CensusApiAdapter(ACSDataCache cache) {
     this.moshi = new Moshi.Builder().build();
     Type listOfListsOfStringType = Types.newParameterizedType(List.class, List.class, String.class);
@@ -28,7 +36,11 @@ public class CensusApiAdapter implements IDataFetcher {
     this.acsDataCache = cache;
     fetchAndCacheStateCodes();
   }
-
+  /**
+   * Fetches and caches the state codes from the Census API.
+   *
+   * @return A list of lists containing state codes and names.
+   */
   public List<List<String>> fetchAndCacheStateCodes() {
     try {
       URL url = new URL("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*");
@@ -53,7 +65,12 @@ public class CensusApiAdapter implements IDataFetcher {
     }
     return null;
   }
-
+  /**
+   * Retrieves the state code corresponding to the given state name.
+   *
+   * @param stateName The name of the state.
+   * @return The state code.
+   */
   public String getStateCode(String stateName) {
     String cachedCode = (String) acsDataCache.getIfPresent("stateCode:" + stateName);
     if (cachedCode != null) {
@@ -66,7 +83,14 @@ public class CensusApiAdapter implements IDataFetcher {
     }
     return code;
   }
-
+  /**
+   * Retrieves the county code corresponding to the given state and county names.
+   *
+   * @param stateName  The name of the state.
+   * @param countyName The name of the county.
+   * @return The county code.
+   * @throws IOException if an I/O error occurs.
+   */
   public String getCountyCode(String stateName, String countyName) throws IOException {
     String cacheKey = "countyCode:" + stateName + ":" + countyName;
     String cachedCode = (String) acsDataCache.getIfPresent(cacheKey);
@@ -112,6 +136,12 @@ public class CensusApiAdapter implements IDataFetcher {
     }
   }
 
+  /**
+   * Getter Methods Below For State, Country, and Data Code.
+   * @param stateName
+   * @return
+   * @throws IOException
+   */
   @Override
   public String fetchStateCode(String stateName) throws IOException {
     return this.getStateCode(stateName);
@@ -145,6 +175,12 @@ public class CensusApiAdapter implements IDataFetcher {
     }
   }
 
+  /**
+   * A helper method to construct the api request for the census api
+   * @param state
+   * @param countyCodeWildcard
+   * @return
+   */
   private String constructApiUrl(String state, String countyCodeWildcard) {
     String baseApiUrl = "https://api.census.gov/data/2021/acs/acs1/subject";
     String variables = "get=NAME,S2802_C03_022E";
@@ -153,6 +189,12 @@ public class CensusApiAdapter implements IDataFetcher {
     return String.format("%s?%s&%s&%s", baseApiUrl, variables, forCounty, inState);
   }
 
+  /**
+   * This is the actual logic for how our server access data from the Census API given the user's query
+   * @param urlString
+   * @return
+   * @throws IOException
+   */
   private String makeApiRequest(String urlString) throws IOException {
     URL url = new URL(urlString);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();

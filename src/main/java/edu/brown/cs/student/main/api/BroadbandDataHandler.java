@@ -12,12 +12,20 @@ import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
-
+/**
+ * This class handles HTTP requests related to broadband data retrieval.
+ * It implements the RequestHandler interface to process incoming requests.
+ */
 public class BroadbandDataHandler implements RequestHandler {
   private CensusApiAdapter censusApiAdapter;
   private final Moshi moshi;
   private final JsonAdapter<Map<String, Object>> jsonAdapter;
 
+  /**
+   * Constructs a BroadbandDataHandler object with the provided CensusApiAdapter.
+   *
+   * @param censusApiAdapter The adapter for accessing Census API.
+   */
   public BroadbandDataHandler(CensusApiAdapter censusApiAdapter) {
     this.censusApiAdapter = censusApiAdapter;
     this.moshi = new Moshi.Builder().build();
@@ -25,15 +33,25 @@ public class BroadbandDataHandler implements RequestHandler {
     this.jsonAdapter = moshi.adapter(type);
   }
 
+  /**
+   * Handles the HTTP request, retrieves broadband data based on state and county,
+   * and returns a JSON response.
+   *
+   * @param request  The HTTP request object.
+   * @param response The HTTP response object.
+   * @return JSON representation of broadband data or error message.
+   * @throws Exception if an error occurs during data retrieval or processing.
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
+    // access query params
     String stateName = request.queryParams("state");
     String countyName = request.queryParams("county");
     if (stateName == null || countyName == null) {
       response.status(400); // BAD REQUEST
       return "State and county parameters are required.";
     }
-
+    // error checking the params
     try {
       String stateCode = censusApiAdapter.getStateCode(stateName);
       if (stateCode == null) {
@@ -53,7 +71,7 @@ public class BroadbandDataHandler implements RequestHandler {
         return "";
       }
       String broadbandAccessPercentage = broadbandData.get(1).get(1);
-
+      // store the responses from what was returned from the census api adapter
       Map<String, Object> responseData = new HashMap<>();
       responseData.put("state", stateName);
       responseData.put("county", countyName);

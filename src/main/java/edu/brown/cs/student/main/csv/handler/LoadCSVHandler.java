@@ -8,13 +8,24 @@ import java.util.List;
 import spark.Request;
 import spark.Response;
 
+/**
+ * This class handles HTTP requests to load CSV files and parse their contents.
+ * It implements the RequestHandler interface to process incoming requests.
+ */
 public class LoadCSVHandler implements RequestHandler {
   private static List<List<String>> data; // Store the CSV data
   private static Boolean loaded = false;
   private static String filePath;
 
   public LoadCSVHandler() {}
-
+  /**
+   * Handles the HTTP request to load and parse a CSV file.
+   *
+   * @param request  The HTTP request object.
+   * @param response The HTTP response object.
+   * @return A message indicating the status of CSV loading.
+   * @throws Exception if an error occurs during loading or parsing.
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String filePath = request.queryParams("filepath");

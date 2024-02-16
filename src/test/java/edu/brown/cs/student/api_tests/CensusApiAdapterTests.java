@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+/**
+ * Unit tests for the CensusApiAdapter class.
+ */
 class CensusApiAdapterTests {
 
   private MockDataFetcher mockDataFetcher;
