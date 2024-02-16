@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main.api;
+package edu.brown.cs.student.api_tests.mocks;
 
 public record PercentageCensusData(double data) {
 }

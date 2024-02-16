@@ -1,9 +1,9 @@
-package edu.brown.cs.student;
+package edu.brown.cs.student.api_tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import edu.brown.cs.student.main.api.CensusApiAdapter;
-import edu.brown.cs.student.main.api.MockDataFetcher;
+import edu.brown.cs.student.api_tests.mocks.MockDataFetcher;
 import edu.brown.cs.student.main.cache.ACSDataCache;
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class CensusApiAdapterTest {
+class CensusApiAdapterTests {
 
   private MockDataFetcher mockDataFetcher;
   private CensusApiAdapter adapter;
@@ -102,4 +102,30 @@ class CensusApiAdapterTest {
     long duration = System.currentTimeMillis() - startTime;
     assertTrue(duration < 100, "Fetching county code from cache should be fast");
   }
+
+  @Test
+  void testGetStateCode_EmptyStateName() {
+    String stateCode = adapter.getStateCode("");
+    assertNull(stateCode, "The state code for an empty state name should be null.");
+  }
+
+
+  @Test
+  void testFetchBroadbandData_InvalidState() {
+    String state = "XX"; // Invalid state code
+    String county = "003";
+    assertThrows(IOException.class,
+            () -> adapter.fetchBroadbandData(state, county),
+            "Expected IOException for invalid state code");
+  }
+
+  @Test
+  void testFetchBroadbandData_InvalidCounty() {
+    String state = "34";
+    String county = "YYY"; // Invalid county code
+    assertThrows(IOException.class,
+            () -> adapter.fetchBroadbandData(state, county),
+            "Expected IOException for invalid county code");
+  }
+
 }
