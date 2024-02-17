@@ -53,7 +53,6 @@ public class CSVSearcher {
 
         if (columnIndex == -1) {
           System.err.println("Column Name Does Not Exist");
-          System.exit(0);
         }
 
         this.searchByHeader(data, searchValue, columnIndex, header);

@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
+
 /**
- * This class handles HTTP requests related to broadband data retrieval.
- * It implements the RequestHandler interface to process incoming requests.
+ * This class handles HTTP requests related to broadband data retrieval. It implements the
+ * RequestHandler interface to process incoming requests.
  */
 public class BroadbandDataHandler implements RequestHandler {
   private CensusApiAdapter censusApiAdapter;
@@ -34,10 +35,10 @@ public class BroadbandDataHandler implements RequestHandler {
   }
 
   /**
-   * Handles the HTTP request, retrieves broadband data based on state and county,
-   * and returns a JSON response.
+   * Handles the HTTP request, retrieves broadband data based on state and county, and returns a
+   * JSON response.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return JSON representation of broadband data or error message.
    * @throws Exception if an error occurs during data retrieval or processing.

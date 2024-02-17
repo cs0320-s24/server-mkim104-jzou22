@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
   /**
-   * Main class responsible for initializing and starting the server, as well as registering request handlers.
+   * Main class responsible for initializing and starting the server, as well as registering request
+   * handlers.
    */
   public static void main(String[] args) {
     ACSDataCache acsDataCache = new ACSDataCache(100, 30, TimeUnit.MINUTES);

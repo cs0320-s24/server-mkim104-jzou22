@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.cache;
 
 import java.util.Optional;
+
 /**
  * This interface represents a generic cache for storing key-value pairs.
  *

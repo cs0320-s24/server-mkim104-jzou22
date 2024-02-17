@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class adapts the Census API to fetch state and county codes, as well as broadband data.
- * It implements the IDataFetcher interface to provide methods for fetching codes and data.
+ * This class adapts the Census API to fetch state and county codes, as well as broadband data. It
+ * implements the IDataFetcher interface to provide methods for fetching codes and data.
  */
 public class CensusApiAdapter implements IDataFetcher {
   private final Moshi moshi;
@@ -86,7 +86,7 @@ public class CensusApiAdapter implements IDataFetcher {
   /**
    * Retrieves the county code corresponding to the given state and county names.
    *
-   * @param stateName  The name of the state.
+   * @param stateName The name of the state.
    * @param countyName The name of the county.
    * @return The county code.
    * @throws IOException if an I/O error occurs.
@@ -138,6 +138,7 @@ public class CensusApiAdapter implements IDataFetcher {
 
   /**
    * Getter Methods Below For State, Country, and Data Code.
+   *
    * @param stateName
    * @return
    * @throws IOException
@@ -177,6 +178,7 @@ public class CensusApiAdapter implements IDataFetcher {
 
   /**
    * A helper method to construct the api request for the census api
+   *
    * @param state
    * @param countyCodeWildcard
    * @return
@@ -190,7 +192,9 @@ public class CensusApiAdapter implements IDataFetcher {
   }
 
   /**
-   * This is the actual logic for how our server access data from the Census API given the user's query
+   * This is the actual logic for how our server access data from the Census API given the user's
+   * query
+   *
    * @param urlString
    * @return
    * @throws IOException

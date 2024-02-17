@@ -1,29 +1,24 @@
 package edu.brown.cs.student.main.server;
 
 import spark.Service;
+
 /**
- * Implementation of the Server interface using Spark.
- * This class handles starting, stopping, and registering request handlers using Spark's service.
+ * Implementation of the Server interface using Spark. This class handles starting, stopping, and
+ * registering request handlers using Spark's service.
  */
 public class SparkServer implements Server {
   private Service http;
-  /**
-   * Constructs a SparkServer instance and initializes the Spark service.
-   */
+  /** Constructs a SparkServer instance and initializes the Spark service. */
   public SparkServer() {
     this.http = Service.ignite();
   }
-  /**
-   * Starts the Spark server on the specified port.
-   */
+  /** Starts the Spark server on the specified port. */
   @Override
   public void start() {
     http.port(3232);
     System.out.println("Server started on port 3232");
   }
-  /**
-   * Stops the Spark server.
-   */
+  /** Stops the Spark server. */
   @Override
   public void stop() {
     http.stop();
@@ -31,7 +26,7 @@ public class SparkServer implements Server {
   /**
    * Registers a request handler for the specified path using Spark.
    *
-   * @param path    The path for which the handler is registered.
+   * @param path The path for which the handler is registered.
    * @param handler The request handler to be registered.
    */
   @Override

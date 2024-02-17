@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
+
 /**
- * This class handles HTTP requests to view the contents of a loaded CSV file in JSON format.
- * It implements the RequestHandler interface to process incoming requests.
+ * This class handles HTTP requests to view the contents of a loaded CSV file in JSON format. It
+ * implements the RequestHandler interface to process incoming requests.
  */
 public class ViewCSVHandler implements RequestHandler {
   private final LoadCSVHandler loadCSVHandler;
@@ -34,7 +35,7 @@ public class ViewCSVHandler implements RequestHandler {
   /**
    * Handles the HTTP request to view the contents of a loaded CSV file in JSON format.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return JSON representation of the CSV data.
    * @throws Exception if an error occurs during conversion or handling.
@@ -51,7 +52,6 @@ public class ViewCSVHandler implements RequestHandler {
     response.type("application/json");
     return jsonAdapter.toJson(jsonMap);
   }
-
 
   /**
    * Converts the 2D array representing CSV data into a map for JSON conversion.

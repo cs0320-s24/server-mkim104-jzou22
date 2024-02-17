@@ -3,9 +3,7 @@ package edu.brown.cs.student.main.api;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * This interface defines methods for fetching state codes, county codes, and broadband data.
- */
+/** This interface defines methods for fetching state codes, county codes, and broadband data. */
 public interface IDataFetcher {
   /**
    * Fetches the state code corresponding to the given state name.
@@ -27,7 +25,7 @@ public interface IDataFetcher {
   /**
    * Fetches broadband data for the specified state and county.
    *
-   * @param state  The state code.
+   * @param state The state code.
    * @param county The county code.
    * @return A list of lists containing broadband data.
    * @throws IOException if an I/O error occurs.
